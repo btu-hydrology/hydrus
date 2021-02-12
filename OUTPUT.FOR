@@ -595,6 +595,203 @@ c              ThGj=amax1(0.,ths(Mj)-ThWj+thSIm(Mj)-ThImobj)
         vN=vN-(ConVT(N)+ConVT(N-1))/2.*(Temp(N)-Temp(N-1))/dxN
       end if
 
+#define NEWOUTPUT 1
+      
+*     COLUMN BASED OUTPUT DCV
+#if NEWOUTPUT
+      if(lPrint) then
+       if(t.eq.0) then
+*      Header for full domain
+         write(76,'("Time  Area  ",$)') 
+         if(lWat.or.PLevel.eq.0) then
+            write(76,'("W-volume  ",$)')
+            if(iDualPor.gt.0) then
+              write(76,'("W-volumeI",$)')
+            end if
+            write(76,'("In-flow  ",$)')
+            write(76,'("hMean  ",$)')
+         end if
+         if(lTemp) then
+            write(76,'("HeatVol  Tmean  ",$)')
+        end if
+         if(lChem) then
+            do 19 jS=1,NS
+                write(76,'("ConcVol",i1,2X,"cMean",i1,"  ",$)') jS,jS
+                if(.not.lEquil) then
+                    if(lMobIm(1).or.iDualPor.gt.0) then
+                      write(76,'("ConcVolIm",i1,2X,"cMeanIm",i1,2X,$)') jS,jS
+                    else
+                      write(76,'("SorbVolIm",i1,2X,"sMeanIm",i1,2X,$)') jS,jS
+                    end if
+                end if
+                if(lBact.or.lDualNEq) then
+                    write(76,'("SorbVolIm2_",i1,2X,$)') jS 
+                end if
+19          continue
+         end if
+        if(lWat.or.PLevel.eq.0) then
+            write(76,'("TopFlux  BotFlux  ",$)')
+        end if
+        if(lWat) then
+          write(76,'("WatBalT  WatBalR  ",$)')
+        end if
+        if(lChem) then
+          do 21 jS=1,NS
+            write(76,'("CncValT",i1,2X,"CncValR",i1,"  ",$)') jS,jS
+21        continue
+        end if
+*       Header for each layer 
+        do 22 i=1,NLay
+            write(76,'("Area_L",i1,"  ",$)') i
+            if(lWat.or.PLevel.eq.0) then
+                write(76,'("W-volume_L",i1,"  ",$)') i
+                write(76,'("In-flow_L",i1,"  ",$)') i
+                write(76,'("hMean_L",i1,"  ",$)') i
+            end if
+            if(lTemp) then
+                write(76,'("HeatVol_L",i1,"  ",$)') i
+                write(76,'("tMean_L",i1,"  ",$)') i
+            end if
+            if(lChem) then
+              do 23 jS=1,NS
+                write(76,'("ConcVol",i1,"_L",i1,"  ",$)') jS,i
+                write(76,'("cMean",i1,"_L",i1,"  ",$)') jS,i
+                if(.not.lEquil) then
+                  if(lMobIm(1).or.iDualPor.gt.0) then
+                    write(76,'("ConcVolIm",i1,"_L",i1,"  ",$)') jS,i 
+                    write(76,'("cMeanIm",i1,"_L",i1,"  ",$)') jS,i 
+                  else
+                    write(76,'("SorbVolIm",i1,"_L",i1,"  ",$)') jS,i 
+                    write(76,'("sMeanIm",i1,"_L",i1,"  ",$)') jS,i 
+                  end if
+                end if
+                if(lBact.or.lDualNEq) then
+                  write(76,'("SorbVolIm2",i1,"_L",i1,"  ",$)') jS,i 
+                end if
+23            continue
+            end if
+22      continue
+        write(76,'(1X)')
+        endif
+*       End of header
+       
+*      Write variables for FULL DOMAIN
+       write(76,'(e15.8,2X,e13.5,2X,$)',err=901) t,Atot   ! time, area
+       if(lWat.or.PLevel.eq.0) then
+         write(76,'(e13.5,2X,$)',err=901) Volume  ! W-volume
+         if(iDualPor.gt.0) write(76,'(e13.5,2X,$)',err=901) VolumeIm
+         write(76,'(e13.5,2X,$)',err=901) Change
+         write(76,'(e13.5,2X,$)',err=901) hTot
+       end if
+      if(lTemp) then
+        write(76,'(e13.5,2X,$)',err=901) TVol
+        write(76,'(e13.3,2X,$)',err=901) TTot
+      end if
+      if(lChem) then
+         do 119 jS=1,NS
+           write(76,'(e13.5,2X,e13.5,2X,$)') ConVol(jS),cTot(jS)
+           if(.not.lEquil) then
+             if(lMobIm(1).or.iDualPor.gt.0) then
+               write(76,'(e13.5,2X,e13.5,2X,$)') ConVolIm(jS),cTotIm(jS)
+             else
+               write(76,'(e13.5,2X,e13.5,2X,$)') ConVolIm(jS),cTotIm(jS)
+             end if
+           end if
+           if(lBact.or.lDualNEq) then
+              write(76,'(e13.5,2X,$)') ConVolIm2(jS)
+           end if
+119       continue
+      end if
+      if(lWat.or.PLevel.eq.0) then
+          write(76,'(e13.5,2X,e13.5,2X,$)') vN,v1
+      end if
+      
+      
+      if(PLevel.eq.0) then
+        wVolI=Volume
+        if(iDualPor.gt.0) wVolI=Volume+VolumeIm
+        if(lChem) then
+          do 20 jS=1,NS
+            cVolI(jS)=ConVol(jS)
+            if(.not.lEquil)     cVolI(jS)=cVolI(jS)+ConVolIm(jS)
+            if(lBact.or.lDualNEq) 
+     !                          cVolI(jS)=cVolI(jS)+ConVolIm2(jS)
+20        continue
+        end if
+      else
+        if(lWat) then
+          wBalT=Volume-wVolI-wCumT
+          if(iDualPor.gt.0) wBalT=Volume-wVolI-wCumT+VolumeIm
+          ww=amax1(DeltW,wCumA)
+          if(ww.gt.1.e-25) then
+            wBalR=abs(wBalT)/ww*100.
+          end if
+        end if
+        
+        if(lChem) then
+          do 821 jS=1,NS
+            cBalT=ConVol(jS)-cVolI(jS)+cCumT(jS)
+            if(.not.lEquil)       cBalT=cBalT+ConVolIm (jS)
+            if(lBact.or.lDualNEq) cBalT=cBalT+ConVolIm2(jS)
+            cc=amax1(DeltC,cCumA(jS))
+            if(cc.gt.1.e-25) then
+              cBalR=abs(cBalT)/cc*100.
+            end if
+821        continue
+        end if
+        
+        
+        
+      end if
+        
+      if(lWat) then
+        write(76,'(e13.5,2X,f13.5,2X,$)') wBalT, wBalR
+      end if
+      if(lChem) then
+        do 121 jS=1,NS
+          write(76,'(e13.5,2X,$)') cBalT
+          write(76,'(e13.5,2X,$)') cBalR
+121      continue
+      end if
+*     Layer variables
+        do 122 i=1,NLay
+            write(76,'(e13.5,2X,$)') Area(i)
+            if(lWat.or.PLevel.eq.0) then
+                write(76,'(e13.5,2X,$)') SubVol(i)
+                write(76,'(e13.5,2X,$)') SubCha(i)
+                write(76,'(e13.5,2X,$)') hMean(i)
+            end if
+            if(lTemp) then
+                write(76,'(e13.5,2X,$)') SubT(i)
+                write(76,'(e13.5,2X,$)') Tmean(i)
+            end if
+            if(lChem) then
+              do 123 jS=1,NS
+                write(76,'(e13.5,2X,$)') ConSub(jS,i)
+                write(76,'(e13.5,2X,$)') cMean(jS,i)
+                if(.not.lEquil) then
+                  if(lMobIm(1).or.iDualPor.gt.0) then
+                    write(76,'(e13.5,2X,$)') ConSubIm(jS,i) 
+                    write(76,'(e13.5,2X,$)') cMeanIm(jS,i)
+                  else
+                    write(76,'(e13.5,2X,$)') ConSubIm(jS,i)
+                    write(76,'(e13.5,2X,$)') cMeanIm(jS,i)
+                  end if
+                end if
+                if(lBact.or.lDualNEq) then
+                  write(76,'(e13.5,2X,$)') ConSubIm2(jS,i)
+                end if
+123            continue
+            end if
+122      continue
+        
+
+*     Finish up the line
+      write(76,'(1X)')
+      end if
+      return
+*     END OF COLUMN BASED OUTPUT
+#else
       if(lPrint) then
         if(t.lt.99999999.) then
           write(76,110,err=901) t
@@ -677,7 +874,9 @@ c              ThGj=amax1(0.,ths(Mj)-ThWj+thSIm(Mj)-ThImobj)
       end if
       if(lPrint) write(76,130,err=901)
       return
-
+#endif
+      
+      
 *     Error when writing into an output file 
 901   ierr=1
       return

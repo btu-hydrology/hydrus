@@ -82,7 +82,7 @@
       end if
       iLengthPath = Len_Trim(cDataPath)
       if(iLengthPath.gt.260-13) goto 930
-      cFileName = cDataPath(1:iLengthPath)//'\Options.in'
+      cFileName = cDataPath(1:iLengthPath)//'Options.in'
       open(35,file=cFileName, status='old',err=998)
 998   continue
 
@@ -100,24 +100,24 @@
      !          OmegaW,lEnd,lVaporOut,lFluxOut)
       data iUnit /50,70,71,75,76,77,78/
 
-      cFileName = cDataPath(1:iLengthPath)//'\Selector.in'
+      cFileName = cDataPath(1:iLengthPath)//'SELECTOR.IN'
       open(30,file=cFileName, status='old',err=901)
-      cFileName = cDataPath(1:iLengthPath)//'\Profile.dat'
+      cFileName = cDataPath(1:iLengthPath)//'PROFILE.DAT'
       open(32,file=cFileName, status='old',err=901)
-      cFileName = cDataPath(1:iLengthPath)//'\I_CHECK.OUT'
+      cFileName = cDataPath(1:iLengthPath)//'I_CHECK.OUT'
       open(50,file=cFileName, status='unknown',err=902)
       if(lPrint) then
-        cFileName = cDataPath(1:iLengthPath)//'\RUN_INF.OUT'
+        cFileName = cDataPath(1:iLengthPath)//'RUN_INF.OUT'
         open(70,file=cFileName, status='unknown',err=902)
-        cFileName = cDataPath(1:iLengthPath)//'\T_LEVEL.OUT'
+        cFileName = cDataPath(1:iLengthPath)//'T_LEVEL.OUT'
         open(71,file=cFileName, status='unknown',err=902)
-        cFileName = cDataPath(1:iLengthPath)//'\NOD_INF.OUT'
+        cFileName = cDataPath(1:iLengthPath)//'NOD_INF.OUT'
         open(75,file=cFileName, status='unknown',err=902)
-        cFileName = cDataPath(1:iLengthPath)//'\BALANCE.OUT'
+        cFileName = cDataPath(1:iLengthPath)//'BALANCE.OUT'
         open(76,file=cFileName, status='unknown',err=902)
-        cFileName = cDataPath(1:iLengthPath)//'\OBS_NODE.OUT'
+        cFileName = cDataPath(1:iLengthPath)//'OBS_NODE.OUT'
         open(77,file=cFileName, status='unknown',err=902)
-        cFileName = cDataPath(1:iLengthPath)//'\PROFILE.OUT'
+        cFileName = cDataPath(1:iLengthPath)//'PROFILE.OUT'
         open(78,file=cFileName, status='unknown',err=902)
       end if
 
@@ -135,26 +135,26 @@
 
       if(lPrint) then
         if(lFluxOut) then
-          cFileName = cDataPath(1:iLengthPath)//'\T_Level1.OUT'
+          cFileName = cDataPath(1:iLengthPath)//'T_Level1.OUT'
           open(44,file=cFileName, status='unknown',err=902)
         end if
         if(lVaporOut.and.lVapor) then
-          cFileName = cDataPath(1:iLengthPath)//'\NOD_INF_V.OUT'
+          cFileName = cDataPath(1:iLengthPath)//'NOD_INF_V.OUT'
           open(45,file=cFileName, status='unknown',err=902)
         end if
       end if
       if(TopInF.or.BotInF.or.AtmBC) then
-        cFileName = cDataPath(1:iLengthPath)//'\ATMOSPH.IN'
+        cFileName = cDataPath(1:iLengthPath)//'ATMOSPH.IN'
         open(31,file=cFileName, status='old',err=901)
         if(lPrint) then
-          cFileName = cDataPath(1:iLengthPath)//'\A_LEVEL.OUT'
+          cFileName = cDataPath(1:iLengthPath)//'A_LEVEL.OUT'
           open(72,file=cFileName, status='unknown',err=902)
         end if
         if(lMeteo) then
-          cFileName = cDataPath(1:iLengthPath)//'\Meteo.in'
+          cFileName = cDataPath(1:iLengthPath)//'Meteo.in'
           open(33,file=cFileName, status='old',err=902)
           if(lPrint) then
-            cFileName = cDataPath(1:iLengthPath)//'\Meteo.out'
+            cFileName = cDataPath(1:iLengthPath)//'Meteo.out'
             open(43,file=cFileName, status='unknown',err=902)
           end if
         end if
@@ -175,7 +175,7 @@
      !              AThS,ThRR,ConO,ConR,AKS,KappaO,Ah,AK,iHyst,iModel,
      !              cDataPath)
       if(iModel.eq.nTabMod) then
-        cFileName = cDataPath(1:iLengthPath)//'\Mater.in'
+        cFileName = cDataPath(1:iLengthPath)//'Mater.in'
         open(36,file=cFileName, status='old',err=901)
       end if
       if(lInitW.and.iModel.lt.nTabMod) then
