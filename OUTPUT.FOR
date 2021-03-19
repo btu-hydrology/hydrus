@@ -595,7 +595,7 @@ c              ThGj=amax1(0.,ths(Mj)-ThWj+thSIm(Mj)-ThImobj)
         vN=vN-(ConVT(N)+ConVT(N-1))/2.*(Temp(N)-Temp(N-1))/dxN
       end if
 
-#define NEWOUTPUT 1
+#define NEWOUTPUT 0
       
 *     COLUMN BASED OUTPUT DCV
 #if NEWOUTPUT
