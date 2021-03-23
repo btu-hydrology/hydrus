@@ -10,10 +10,10 @@ It was tested on
 ## Instructions
 
 ```bash
-git clone https://github.com/bilke/hydrus.git
+git clone https://github.com/btu-hydrology/hydrus.git
 mkdir build
 cd build
-cmake ../hydrus [-G "MSYS Makefiles"]
+cmake ../ [-G "MSYS Makefiles"]
 make
 ./h1d_calc
 ```
